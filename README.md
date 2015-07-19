@@ -93,11 +93,11 @@ DBWrap::start()->Query("DELETE FROM users WHERE firstname = 'david'", function()
 As I learn more techniques required in developing a Database Wrapper for PHP, I'll update immediately.
 The wrapper obviously needs more abstraction for the end user. The following features are up next in my to-do list on this project:
 
-->Method chaining
-->where() method
-->has() method
-->hasOne() method
-->Sub Queries
-->Functions
+####->Method chaining
+####->where() method
+####->has() method
+####->hasOne() method
+####->Sub Queries
+####->DB Functions
 
-You can reach me on twitter at https:/twitter.com/DavidNgugi15
+You can reach me on twitter at Twitter
