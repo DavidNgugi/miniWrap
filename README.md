@@ -1,6 +1,5 @@
 MiniWrap for PEAR::DB -- Simple PEAR::DB wrapper
 <hr>
-<hr>
 ### Table of Contents
 **[Installation](#installation)**  
 **[Initialization](#initialization)**  
@@ -38,7 +37,7 @@ DBWrap::start()->Query("INSERT INTO users(firstname,lastname,password) VALUES('d
 ### Update Query
 ```php
 
-DBWrap::start()->Query("UPDATE users set firstname = '$firstname', lastname = '$lastname', password = '$password')", function(){
+DBWrap::start()->Query("UPDATE users set firstname = '$firstname', lastname = '$lastname', password = '$password' WHERE user_id = '1')", function(){
 	$log = DBWrap::getLastLog();
 	print_r($log);
 });
