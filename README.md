@@ -100,4 +100,4 @@ The wrapper obviously needs more abstraction for the end user. The following fea
 ####->Sub Queries
 ####->DB Functions
 
-You can reach me on twitter on <a href = 'https://twitter.com/DavidNgugi15'>Twitter</a>
+You can reach me on <a href = 'https://twitter.com/DavidNgugi15'>Twitter</a>
