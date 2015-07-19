@@ -73,7 +73,7 @@ $cols = Array (
 	'password'
 );
 
-DBWrap::start()->Query("SELECT * FROM users", "ss", function(){
+DBWrap::start()->Query("SELECT * FROM users WHERE firstname ='david'", "ss", function(){
  	$data = DBWrap::replace_keys(DBWrap::get(), $cols);
  	foreach ($data as $r){
  		echo $r['firstname'];
