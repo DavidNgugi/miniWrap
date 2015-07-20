@@ -21,7 +21,7 @@ class DBWrap
 	private $_results = Array(),
 			$_count = 0;
 			
-	Public static $_log = array;
+	Public static $_log = Array();
 
 	Private static $arrResults = Array();
 	/**
