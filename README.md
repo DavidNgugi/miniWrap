@@ -16,12 +16,12 @@ MiniWrap for PEAR::DB -- Simple PEAR::DB wrapper
 **[The Future](#the-future)**
 
 ### Installation
-To utilize this class, first import DBWrap.class.php into your project, and require it.
-Setup your configuration data in the config file
+To utilize this class, first import Mini.class.php into your project, and require it.
+Setup your configuration data in the same class file
 
 ```html
 <link href="mini.css" rel = "stylesheet"/> 
-
+```
 ```php
 require_once ('Mini.class.php');
 ```
@@ -118,7 +118,7 @@ if($q){
 
 ### Delete Query
 ```php
-$q = $con->deleteFrom("tablename)->whereOne("column","value")->exec();
+$q = $con->deleteFrom("tablename")->whereOne("column","value")->exec();
 ```
 
 ###Where Method
@@ -249,7 +249,7 @@ if($q){
 ###	Error handling
 A much better error handler is in development but in the meantime, in order to get the generated error, use the getLastError() method. E.g
 ```php
-$q = $con->deleteFrom("tablename)->whereOne("column","value")->exec();
+$q = $con->deleteFrom("tablename")->whereOne("column","value")->exec();
 if($q){
 	//do something
 }else{
@@ -259,7 +259,7 @@ if($q){
 
 You can also view the last Query using the getLastQuery() Method
 ```php
-$q = $con->deleteFrom("tablename)->whereOne("column","value")->exec();
+$q = $con->deleteFrom("tablename")->whereOne("column","value")->exec();
 if($q){
 	//do something
 }else{
