@@ -10,9 +10,6 @@
  * @version   1.0.0
  **/
 
-// Load PEAR::DB DB API file
-require_once ("DB.php");
-
 class Mini
 {
 	/**
@@ -35,14 +32,21 @@ class Mini
 	Protected $_con = null;
 	/**
      * Database credentials
-     *
+     * Moved from mysqli to PDO 
      * @var string
      */
-	Protected $driver = 'mysqli'; // Currently Supports mysqli only (Tested)
+	Protected $driver = 'mysql'; 
+    Protected $charset = 'utf8';
     Protected $host = 'localhost';
     Protected $username = 'root';
     Protected $password = '';
-    Protected $db = '';
+    Protected $db = 'hospital_db';
+    Protected $options = 
+                        [
+                            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                            PDO::ATTR_EMULATE_PREPARES   => false,
+                        ];
     /**
      * Contains row count from query
      *
@@ -78,7 +82,7 @@ class Mini
      *
      * @var string
      */
-	Protected $_fetchMode = DB_FETCHMODE_ASSOC;
+	Protected $_fetchMode = PDO::FETCH_ASSOC;
 	/**
      * Contains Logs of all errors encountered
      *
@@ -132,27 +136,39 @@ class Mini
      */
 	Public function __construct(){
 		try {
-			if (!PEAR::loadExtension($this->driver)) {
-				array_push($this->_errors, "<div id ='error'>DB Driver could not be loaded!</div>");
-            	die($this->getLastError());
-        	}
-			$this->_dsn = "".$this->driver."://".$this->username.":".$this->password."@".$this->host."/".$this->db."";
+			
+			$this->_con = $this->connect();
 
-			$this->_con =& DB::connect($this->_dsn);
-
-			if (PEAR::isError($this->_con)) {
+			if (!$this->_con) {
 				array_push($this->_errors, $this->_con->getMessage());
 				die($this->getLastError());
-			}else{
-				$this->_con->setFetchMode($this->_fetchMode);
 			}
 
 			self::$_instance = $this;
 			
-		}catch(Exception $e){
+		}catch(PDOException $e){
 			array_push($this->_errors, $e->getMessage());
 		}
 	}
+
+    private function connect(){
+        $this->_dsn = "".$this->driver.":host=".$this->host.";dbname=".$this->db.";charset=".$this->charset."";
+        $db = new PDO($this->_dsn,$this->username, $this->password, $this->options);
+        // To-Do add any other options here
+        return $db;
+    }
+
+    public function getAssoc(){
+        $this->_con =  $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $this->_fetchMode = PDO::FETCH_ASSOC;
+        return $this;
+    }
+
+    public function getObject(){
+        $this->_con =  $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+        $this->_fetchMode = PDO::FETCH_OBJ;
+        return $this;
+    }
 
 	/**
      * A method of returning the static instance to allow access to the
@@ -200,10 +216,10 @@ class Mini
 	 * @param String $mode fetch mode for query results
 	 * @return void
 	 **/
-	Public function fetchMode($mode){
-		if (!empty($mode) && is_string($mode)) 
-		 	$this->_fetchMode = $this->map($mode);
-	}
+	// Public function fetchMode($mode){
+	// 	if (!empty($mode) && is_string($mode)) 
+	// 	 	$this->_fetchMode = $this->map($mode);
+	// }
 	
 
 	/**
@@ -263,7 +279,7 @@ class Mini
 			$data = is_array($values) ? "'".implode("' , ' ", $values)."'" : $this->SQLEscape($values); 
 			$this->_query = "INSERT INTO ".$this->_tableName."(".$column.") VALUES(".$data.")";
 			$this->execute();
-			$this->_affectedRows += $this->_con->affectedRows();
+			$this->_affectedRows += $this->_con->rowCount();
 			return $this;
 		}else{
 			$err = "<div id = 'warning'>[Warning] : Invalid column-value pair provided</div>";
@@ -543,18 +559,18 @@ class Mini
      **/
     Public function fetchRows(){
     	try{
-    		$this->_con->setFetchMode($this->_fetchMode);
+    		// $this->_con->setFetchMode($this->_fetchMode);
     		$result = $this->execute();
-    		$this->_affectedRows += $this->_con->affectedRows();
+    		// $this->_affectedRows += $this->_con->rowCount();
     	
     		if ($this->_rowsToGet > 1 || $this->_rowsToGet == null ) {
     			$i = 0;
-    			while($res = $result->fetchRow()):
+    			while($res = $result->fetchAll($this->_fetchMode)):
 		    		array_push($this->_results, $res);
 		    		$i++;
 		       	endwhile;
     		}else if($this->_rowsToGet == 1){
-    			$res = $result->fetchRow();
+    			$res = $result->fetchAll($this->_fetchMode);
     			array_push($this->_results, $res);
     		}
 
@@ -574,20 +590,22 @@ class Mini
      * @return DB Object
      **/
     Protected function execute(){
+        // $this->_con->beginTransaction();
     	try{
-    		$this->_con->autoCommit(false);
     		array_push($this->_queries, $this->_query);
-	    	$res =& $this->_con->query($this->_query);
-	    	$this->_con->commit();
-	    	if (PEAR::isError($res)) {
-	    		$this->_con->rollback();
+	    	$res = $this->_con->query($this->_query);
+	    	// $this->_con->commit();
+	    	if (!$res) {
+	    		// $this->_con->rollback();
 	    		array_push($this->_errors, $res->getMessage());
 	    		echo "<div id = 'error'>[At commit] DB Error Msg : ".$res->getMessage()."<br><br>Query : ".$this->_query."</div>";
 	    		exit;
 	    	}else{
+                // $this->_con->rollback();
 	    		return $res;
 	    	}
-	    }catch(Exception $e){
+	    }catch(PDOException $e){
+            // $this->_con->rollback();
 	    	array_push($this->_errors, $e->getMessage());
 	    }
     }
@@ -610,7 +628,7 @@ class Mini
      * @return Integer 
      **/
     Public function getRowCount(){
-    	return $this->_count = $this->execute()->numRows();
+    	return $this->_count = $this->execute()->rowCount();
     }
 
      /**
@@ -628,9 +646,9 @@ class Mini
     Protected function map($setmode){
     	$setmode = strtoupper($setmode);
     	if ( strcmp($setmode, 'OBJECT') == 1) {
-    		return DB_FETCHMODE_OBJECT;
+    		return PDO::FETCH_OBJ;
     	}else{
-    		return DB_FETCHMODE_ASSOC;
+    		return PDO::FETCH_ASSOC;
     	}
     }
 
