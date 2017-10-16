@@ -1,6 +1,8 @@
 MiniWrap for PEAR::DB -- Simple PEAR::DB wrapper
 <hr>
+
 ### Table of Contents
+
 **[Installation](#installation)**  
 **[Initialization](#initialization)**  
 **[Insert Query](#insert-query)**  
