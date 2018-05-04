@@ -1,0 +1,49 @@
+{
+    "name": "davidngugi/miniwrap",
+    "description": "A simple lightweight SQL Wrapper using PDO",
+    "keywords":["sql", "pdo", "wrapper", "miniwrap"],
+    "type": "metapackage",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Ngugi",
+            "email": "david@davidngugi.com"
+        }
+    ],
+    "repositories": [{
+        "type": "package",
+        "package": {
+            "name": "davidngugi/miniWrap",
+            "version": "1.0.0",
+            "source": {
+                    "url": "git@github.com:DavidNgugi/miniWrap.git",
+                "type": "git",
+            "reference": "1.0.0"
+            }
+        }
+    }],
+    "require": {
+        "php": ">=7.0",
+        "vlucas/phpdotenv": "^2.5@dev"
+    },
+    "require-dev": {
+        "mockery/mockery": "dev-master",
+        "phpunit/phpunit": "4.*"
+    }, 
+    "autoload": {
+        "psr-4": {
+            "MiniWrap\\": "src/"
+        },
+        "files": [
+            "src/Helpers/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MiniWrap\\Tests\\": "tests/",
+            "MiniWrap\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

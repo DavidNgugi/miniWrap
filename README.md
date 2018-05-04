@@ -18,29 +18,38 @@ MiniWrap for PEAR::DB -- Simple PEAR::DB wrapper
 **[The Future](#the-future)**
 
 ### Installation
-To utilize this class, first import Mini.class.php into your project, and require it.
-Setup your configuration data in the same class file
 
-```html
-<link href="mini.css" rel = "stylesheet"/> 
+You can install via composer 
+
+```bash
+composer require davidngugi/miniwrap
 ```
-```php
-require_once ('Mini.class.php');
+
+Set .env file and setup your database credentials
+```bash
+mv .env.example .env
 ```
-or Autoload the class with other classes in your projects using spl_autoload_register() or _autoload() functions
 
 ### Initialization
 Setup the Host, User, Password, DB, table prefix constants in the MiniWrap class file.
 Simple initialization with utf8 charset by default:
 
 ```php
+
+use MiniWrap\Mini;
+
 $con = Mini::getInstance();
 ```
+
 or
 
 ```php
+
+use MiniWrap\Mini;
+
 $con = new Mini();
 ```
+
 ###Query types
 One can use the pre-built methods in MiniWrap or use the generic() method that allows you to write raw SQL statements.
 Example:
@@ -78,6 +87,7 @@ $columnValues = Array(
 $q = $con->update("tablename", $columnValues)->exec();
 
 ```
+
 ### Select Query
 Mini uses the selectFrom() Method that takes 3 arguments. The first being the tablename, second is the number of rows (LIMIT) and the third is the column(s).
 Multiple columns can be inputed as a one-dimensional array.
@@ -120,7 +130,7 @@ if($q){
 
 ### Delete Query
 ```php
-$q = $con->deleteFrom("tablename")->whereOne("column","value")->exec();
+$q = $con->deleteFrom("tablename")->where("column","value")->exec();
 ```
 
 ###Where Method
@@ -133,7 +143,7 @@ $columnValues = Array(
 						"column1" => "value1"
 					);
 
-$q = $con->selectFrom("tablename", null, $cols)->Where($columnValues, "AND")->exec();
+$q = $con->selectFrom("tablename", null, $cols)->whereMany($columnValues, "AND")->exec();
 if($q){
 	$results = $q->fetchRows();
 	foreach($results as $r):
@@ -141,11 +151,12 @@ if($q){
 	endforeach;
 }
 ```
-2. whereOne("column", "value") - Single column conditional
+2. where("column", "conditon", "value") - Single column conditional
+- The conditon should be one of the following (=, >=, <=, >, <, !=). Default is =
 
 ```php
 $cols = Array("column1","column2");
-$q = $con->selectFrom("tablename", null, $cols)->whereOne("column", "value")->exec();
+$q = $con->selectFrom("tablename", null, $cols)->where("column", "!=", "value")->exec();
 if($q){
 	$results = $q->fetchRows();
 	foreach($results as $r):
@@ -153,11 +164,12 @@ if($q){
 	endforeach;
 }
 ```
-3. andWhere("column","value") - used after where(), whereOne() or orWhere()
 
+3. andWhere("column","value") - used after whereMany(), where() or orWhere()
+- Also takes a conditon that should be one of the following (=, >=, <=, >, <, !=). Default is =
 ```php
 $cols = Array("column1","column2");
-$q = $con->selectFrom("tablename", null, $cols)->whereOne("column1", "value1")->andWhere("column2","value2")->exec();
+$q = $con->selectFrom("tablename", null, $cols)->where("column1", "value1")->andWhere("column2","value2")->exec();
 if($q){
 	$results = $q->fetchRows();
 	foreach($results as $r):
@@ -165,10 +177,12 @@ if($q){
 	endforeach;
 }
 ```
-4. orWhere("column","value") - used after where(), whereOne() or andWhere()
+
+4. orWhere("column","value") - used after where(), where() or andWhere()
+- Also takes a conditon that should be one of the following (=, >=, <=, >, <, !=). Default is =
 ```php
 $cols = Array("column1","column2");
-$q = $con->selectFrom("tablename", null, $cols)->whereOne("column1", "value1")->orWhere("column2","value2")->exec();
+$q = $con->selectFrom("tablename", null, $cols)->where("column1", "value1")->orWhere("column2","value2")->exec();
 if($q){
 	$results = $q->fetchRows();
 	foreach($results as $r):
@@ -178,13 +192,12 @@ if($q){
 ```
 
 ###Like Method
-In several forms:
-The option argument must be provided. States where to place the percentage sign (%) for regExp functions ("before", "after" or "both")
-The default is both. Therefore your value will be '%value%'
-1. Like(column, value, option) - For Single column Like 
+Comes in several forms:
+Your value should be '%value%' or '%value' or 'value%'
+1. Like(column, value) - For Single column Like 
 ```php
 $cols = Array("column1","column2");
-$q = $con->selectFrom("tablename", null, $cols)->Like("column","value", "before")->exec();
+$q = $con->selectFrom("tablename", null, $cols)->Like("column","%value%")->exec();
 if($q){
 	$results = $q->fetchRows();
 	foreach($results as $r):
@@ -192,11 +205,12 @@ if($q){
 	endforeach;
 }
 ```
+
 2. andLike("column", "value") - used after like() and orLike()
 
 ```php
 $cols = Array("column1","column2");
-$q = $con->selectFrom("tablename", null, $cols)->Like("column","value", "before")->andLike("column","value", "both")->exec();
+$q = $con->selectFrom("tablename", null, $cols)->Like("column","%value")->andLike("column2","%value%")->exec();
 if($q){
 	$results = $q->fetchRows();
 	foreach($results as $r):
@@ -206,8 +220,8 @@ if($q){
 ```
 4. orLike("column","value") - used after like() and andLike()
 ```php
-$cols = Array("column1","column2");
-$q = $con->selectFrom("tablename", null, $cols)->Like("column","value", "before")->orLike("column","value", "before")->orLike("column","value", "after")->exec();
+$cols = Array("column1","column2", "column3");
+$q = $con->selectFrom("tablename", null, $cols)->Like("column","%value%")->orLike("column2","%value")->orLike("column3","value%")->exec();
 if($q){
 	$results = $q->fetchRows();
 	foreach($results as $r):
@@ -215,6 +229,7 @@ if($q){
 	endforeach;
 }
 ```
+
 ###	Grouping Results
 ```php
 $q = $con->selectFrom("tablename", null, "*")->groupBy("column")->exec();
@@ -225,6 +240,7 @@ if($q){
 	endforeach;
 }
 ```
+
 ###	Ordering Results
 ```php
 $q = $con->selectFrom("tablename", null, "*")->orderBy("column")->exec();
@@ -235,6 +251,7 @@ if($q){
 	endforeach;
 }
 ```
+
 ###	Getting Row Count
 Use the getRowCount() Method
 ```php
@@ -251,7 +268,7 @@ if($q){
 ###	Error handling
 A much better error handler is in development but in the meantime, in order to get the generated error, use the getLastError() method. E.g
 ```php
-$q = $con->deleteFrom("tablename")->whereOne("column","value")->exec();
+$q = $con->deleteFrom("tablename")->where("column","value")->exec();
 if($q){
 	//do something
 }else{
@@ -261,7 +278,7 @@ if($q){
 
 You can also view the last Query using the getLastQuery() Method
 ```php
-$q = $con->deleteFrom("tablename")->whereOne("column","value")->exec();
+$q = $con->deleteFrom("tablename")->where("column","value")->exec();
 if($q){
 	//do something
 }else{
@@ -271,14 +288,17 @@ if($q){
 }
 
 ```
+
 ###	The Future
-As I learn more techniques required in developing a Database Wrapper for PHP, I'll update immediately.
+I'll continue updating as I learn more techniques required in developing a Database Wrapper for PHP.
 The following features are up next in my to-do list on this project:
 
 ####->Better Error Logging
 ####->Joins
 ####->Sub Queries
 ####->DB Functions
-####->Support for more DB Drivers (Currently handling mysqli fabulously!)
+####->Support for more DB Drivers (Currently handling PDO fabulously!)
+####->Tests & Query Validation
+####->Optimizations
 
 You can reach me on <a href = 'https://twitter.com/DavidNgugi15'>Twitter</a>

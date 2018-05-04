@@ -1,11 +1,16 @@
 <?php 
+
+namespace MiniWrap;
+
+use PDO;
+
 /**
  * Mini Class
  *
  * @category  PHP Database Access
- * @package   miniWrap
+ * @package   miniwrap
  * @author    David Ngugi <ndavidngugi@gmail.com>
- * @copyright Copyright (c) 2015
+ * @copyright Copyright (c) 2018
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @version   1.0.0
  **/
@@ -17,7 +22,7 @@ class Mini
      *
      * @var Resurce Object
      */
-	Protected static $_instance;
+	Protected static $instance;
 	/**
      * Database Connection String
      *
@@ -35,12 +40,12 @@ class Mini
      * Moved from mysqli to PDO 
      * @var string
      */
-	Protected $driver = 'mysql'; 
-    Protected $charset = 'utf8';
-    Protected $host = 'localhost';
-    Protected $username = 'root';
-    Protected $password = '';
-    Protected $db = 'hospital_db';
+	Protected $driver = env('DB_DRIVER', 'mysql');
+    Protected $charset = env('DB_CHARSET', 'utf8');
+    Protected $host = env('DB_HOST', 'localhost');
+    Protected $username = env('DB_USERNAME', 'root');
+    Protected $password = env('DB_PASSWORD', '');
+    Protected $db = env('DB_NAME', '');
     Protected $options = 
                         [
                             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -144,7 +149,7 @@ class Mini
 				die($this->getLastError());
 			}
 
-			self::$_instance = $this;
+			self::$instance = $this;
 			
 		}catch(PDOException $e){
 			array_push($this->_errors, $e->getMessage());
@@ -180,7 +185,10 @@ class Mini
      * @return object Returns the current instance.
      */
     Public static function getInstance(){
-        return self::$_instance;
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**
@@ -336,12 +344,12 @@ class Mini
 
 /******************************************* WHERE FUNCTIONS *************************************************/
     /**
-     * A convenient SELECT...WHERE function
+     * A convenient SELECT...WHERE function for multiple items with == conditions
      * @param Array $colVal Column and value pairs
      * @param String $op condition in multiple where cases (AND , OR)
      * @return Object
      **/
-    Public function Where($colVal, $op){
+    Public function whereMany($colVal, $op){
     	$this->_whereSet = true; 
 
     	if (!$this->walk()) {
@@ -377,13 +385,14 @@ class Mini
      * Convenient single column Where functions for single Items
      * Evaluate a single value 
      * @param String $column The column name 
+     * @param String $cond The condition (=, >=, <=, >, <, !=)
      * @param String $value The value to query for
      * @return Object
      **/
-    Public function whereOne($column, $value){
+    Public function where($column, $cond = "=", $value){
     	if (!empty($column) && !empty($value)) {
     		$this->_whereSet = true; 
-    		$this->_query .= " WHERE ". $this->SQLEscape($column) . " = '".$this->SQLEscape($value)."'";
+    		$this->_query .= " WHERE ". $this->SQLEscape($column) . "".$cond."'".$this->SQLEscape($value)."'";
     	}
     	return $this;
     }
@@ -392,13 +401,14 @@ class Mini
      * Convenient OR...WHERE for single Items
      * Appends an OR to query
      * @param String $column The column name 
+     * @param String $cond The condition (=, >=, <=, >, <, !=)
      * @param String $value The value to query for
      * @return Object
      **/
-    Public function orWhere($column, $value){
+    Public function orWhere($column, $cond = "=", $value){
     	if (!empty($column) && !empty($value)) {
     		$this->_whereSet = true; 
-    		$this->_query .= " OR ". $this->SQLEscape($column) . " = '".$this->SQLEscape($value)."'";
+    		$this->_query .= " OR ". $this->SQLEscape($column) . "".$cond."'".$this->SQLEscape($value)."'";
     	}
     	return $this;
     }
@@ -407,13 +417,14 @@ class Mini
      * Convenient AND...WHERE for single Items
      * 	Appends an AND to query
      * @param String $column The column name 
+     * @param String $cond The condition (=, >=, <=, >, <, !=)
      * @param String $value The value to query for
      * @return Object
      **/
-    Public function andWhere($column, $value){
+    Public function andWhere($column, $cond = "=", $value){
     	if (!empty($column) && !empty($value)) {
     		$this->_whereSet = true; 
-    		$this->_query .= " AND ". $this->SQLEscape($column) . " = '".$this->SQLEscape($value)."'";
+    		$this->_query .= " AND ". $this->SQLEscape($column) . "".$cond."'".$this->SQLEscape($value)."'";
     	}
     	return $this;
     }
@@ -423,21 +434,12 @@ class Mini
 	 * A convenient Like function
 	 * @param String $column The column name 
      * @param String $value The value to query for
-     * @param String $option Where to place percentage signs % ( %before, after%, %both%) 
 	 * @return Object
 	 **/
-	Public function like($column, $value, $option){
-		if (!empty($column) && !empty($value) && !empty($option)) {
+	Public function like($column, $value){
+		if (!empty($column) && !empty($value)) {
 			$where = ($this->_whereSet) ? ' ' : ' WHERE '; 
-			if ($option == "before") {
-				$this->_query .= $where. $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."'";
-			}else if($option == "after"){
-				$this->_query .= $where. $this->SQLEscape($column) . " LIKE '".$this->SQLEscape($value)."%'";
-			}else if($option == "both"){
-				$this->_query .= $where. $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."%'";
-			}else{
-				$this->_query .= $where. $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."%'";
-			}
+			$this->_query .= $where. $this->SQLEscape($column) . " LIKE '".$this->SQLEscape($value)."'";
 		}
 		return $this;
 	}
@@ -447,20 +449,11 @@ class Mini
 	 *	Appends and OR to query
      * @param String $column The column name 
      * @param String $value The value to query for
-     * @param String $option Where to place percentage signs % ( %before, after%, %both%)
 	 * @return Object
 	 **/
-	Public function orLike($column, $value, $option){
-		if (!empty($column) && !empty($value) && !empty($option)) {
-			if ($option == "before") {
-				$this->_query .= " OR ". $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."'";
-			}else if($option == "after"){
-				$this->_query .= " OR ". $this->SQLEscape($column) . " LIKE '".$this->SQLEscape($value)."%'";
-			}else if($option == "both"){
-				$this->_query .= " OR ". $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."%'";
-			}else{
-				$this->_query .= " OR ". $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."%'";
-			}
+	Public function orLike($column, $value{
+		if (!empty($column) && !empty($value)) {
+            $this->_query .= " OR ". $this->SQLEscape($column) . " LIKE '".$this->SQLEscape($value)."'";
 		}
 		return $this;
 	}
@@ -470,20 +463,11 @@ class Mini
 	 *	Appends AND to query
      * @param String $column The column name 
      * @param String $value The value to query for
-     * @param String $option Where to place percentage signs % ( %before, after%, %both%)
 	 * @return Object
 	 **/
 	Public function andLike($column, $value, $option){
-		if (!empty($column) && !empty($value) && !empty($option)) {
-			if ($option == "before") {
-				$this->_query .= " AND ". $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."'";
-			}else if($option == "after"){
-				$this->_query .= " AND ". $this->SQLEscape($column) . " LIKE '".$this->SQLEscape($value)."%'";
-			}else if($option == "both"){
-				$this->_query .= " AND ". $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."%'";
-			}else{
-				$this->_query .= " AND ". $this->SQLEscape($column) . " LIKE '%".$this->SQLEscape($value)."%'";
-			}
+		if (!empty($column) && !empty($value)) {
+            $this->_query .= " AND ". $this->SQLEscape($column) . " LIKE '".$this->SQLEscape($value)."'";
 		}
 		return $this;
 	}
@@ -721,6 +705,7 @@ class Mini
 	    }
 	   	return (sizeof($emptyItems) > 0) ? true : false;
     }
+
     /**
      * Function to find out whether an 1D array is associative or not
      * @param Array $arr 
@@ -728,15 +713,13 @@ class Mini
      **/
     Protected function is_assoc($arr){
 		foreach ($arr as $key => $value) {
-			if (is_numeric($key)) {
+			if (is_int($key)) {
 				return false;
-				break;
-			}else{
-				return true;
-				break;
 			}
 		}
+        return true;
     }
+
     /**
      * Function to match columns of a get() and where() fn 
      * Not implemented. I wanted to use it but found it impractical for current use
