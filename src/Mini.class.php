@@ -40,7 +40,7 @@ class Mini
      * Moved from mysqli to PDO 
      * @var string
      */
-	Protected $driver = env('DB_DRIVER', 'mysql');
+    Protected $driver = env('DB_DRIVER', 'mysql');
     Protected $charset = env('DB_CHARSET', 'utf8');
     Protected $host = env('DB_HOST', 'localhost');
     Protected $username = env('DB_USERNAME', 'root');
@@ -451,7 +451,7 @@ class Mini
      * @param String $value The value to query for
 	 * @return Object
 	 **/
-	Public function orLike($column, $value{
+	Public function orLike($column, $value){
 		if (!empty($column) && !empty($value)) {
             $this->_query .= " OR ". $this->SQLEscape($column) . " LIKE '".$this->SQLEscape($value)."'";
 		}
