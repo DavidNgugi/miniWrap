@@ -309,4 +309,4 @@ If you would love to support the continuous development and maintenance of this 
 
 # License
 
-This package is open-sourced software licensed under the [MIT Licence](https://github.com/DavidNgugi/miniWrap/blob/master/LICENSE)
+This package is open-sourced software licensed under the [MIT Licence](https://github.com/DavidNgugi/miniWrap/blob/master/LICENCE)
