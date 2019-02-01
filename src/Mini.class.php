@@ -9,7 +9,7 @@ use PDO;
  *
  * @category  PHP Database Access
  * @package   miniwrap
- * @author    David Ngugi <ndavidngugi@gmail.com>
+ * @author    David Ngugi <david@davidngugi.com>
  * @copyright Copyright (c) 2018
  * @license   http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @version   1.0.0
@@ -40,18 +40,43 @@ class Mini
      * Moved from mysqli to PDO 
      * @var string
      */
-    Protected $driver = env('DB_DRIVER', 'mysql');
-    Protected $charset = env('DB_CHARSET', 'utf8');
-    Protected $host = env('DB_HOST', 'localhost');
-    Protected $username = env('DB_USERNAME', 'root');
-    Protected $password = env('DB_PASSWORD', '');
-    Protected $db = env('DB_NAME', '');
-    Protected $options = 
-                        [
-                            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                            PDO::ATTR_EMULATE_PREPARES   => false,
-                        ];
+	Protected $driver;
+	/**
+     * Database character set e.g latin1, utf8
+     *
+     * @var string
+     **/
+	Protected $charset;
+	/**
+     * Host name or IP address of database server
+     *
+     * @var string
+     **/
+	Protected $host;
+	/**
+     * Database username
+     *
+     * @var string
+     **/
+	Protected $username;
+	/**
+     * Database password
+     *
+     * @var string|null
+     **/
+	Protected $password;
+	/**
+     * Database name
+     *
+     * @var string
+     **/
+	Protected $db;
+	/**
+     * PDO options
+     *
+     * @var Array
+     **/
+    Protected $options = Array();
     /**
      * Contains row count from query
      *
@@ -141,6 +166,19 @@ class Mini
      */
 	Public function __construct(){
 		try {
+
+			$this->driver = env('DB_DRIVER', 'mysql');
+			$this->charset = env('DB_CHARSET', 'utf8');
+			$this->host = env('DB_HOST', 'localhost');
+			$this->username = env('DB_USERNAME', 'root');
+			$this->password = env('DB_PASSWORD', '');
+			$this->db = env('DB_NAME', '');
+			$this->options = 
+							[
+								PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+								PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+								PDO::ATTR_EMULATE_PREPARES   => false,
+							];
 			
 			$this->_con = $this->connect();
 
@@ -163,12 +201,22 @@ class Mini
         return $db;
     }
 
+	/**
+	 * Get data as associative array
+	 *
+	 * @return void
+	 */
     public function getAssoc(){
         $this->_con =  $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $this->_fetchMode = PDO::FETCH_ASSOC;
         return $this;
     }
 
+	/**
+	 * Get data as an object
+	 *
+	 * @return 
+	 */
     public function getObject(){
         $this->_con =  $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         $this->_fetchMode = PDO::FETCH_OBJ;
