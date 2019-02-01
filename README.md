@@ -25,11 +25,6 @@ You can install via composer
 composer require davidngugi/miniwrap
 ```
 
-Set .env file and setup your database credentials
-```bash
-mv .env.example .env
-```
-
 ### Initialization
 Setup the Host, User, Password, DB, table prefix constants in the MiniWrap class file.
 Simple initialization with utf8 charset by default:
@@ -50,7 +45,7 @@ use MiniWrap\Mini;
 $con = new Mini();
 ```
 
-###Query types
+### Query types
 One can use the pre-built methods in MiniWrap or use the generic() method that allows you to write raw SQL statements.
 Example:
 
@@ -133,7 +128,7 @@ if($q){
 $q = $con->deleteFrom("tablename")->where("column","value")->exec();
 ```
 
-###Where Method
+### Where Method
 In several forms:
 1. Where(Array[..], type) - For multiple column Where with similar conditioning (AND, OR)
 ```php
@@ -191,7 +186,7 @@ if($q){
 }
 ```
 
-###Like Method
+### Like Method
 Comes in several forms:
 Your value should be '%value%' or '%value' or 'value%'
 1. Like(column, value) - For Single column Like 
