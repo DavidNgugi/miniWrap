@@ -40,9 +40,19 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "MiniWrap\\Tests\\": "tests/",
-            "MiniWrap\\": "src/"
+            "MiniWrap\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "test": [
+            "phpunit"
+        ]
+    },
+    "scripts-descriptions": {
+        "test": "Run all tests!"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
