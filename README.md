@@ -305,7 +305,7 @@ You can reach me on <a href = 'https://twitter.com/DavidNgugi15'>Twitter</a>
 
 If you would love to support the continuous development and maintenance of this package, please consider buying me a coffee.
 
-<a href = "https://www.buymeacoffee.com/DavidNgugi" title = "Buy Me a Coffee" target="_blank"><img src="https://github.com/DavidNgugi/miniWrap/blob/master/coffee.svg?raw=true" width="240px" height ="150px"/></a>
+<a href = "https://www.buymeacoffee.com/DavidNgugi" title = "Buy Me a Coffee" target="_blank"><img src="https://github.com/DavidNgugi/miniWrap/blob/master/coffee.jpg?raw=true" width="240px" height ="150px"/></a>
 
 # License
 
