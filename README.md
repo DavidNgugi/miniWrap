@@ -1,4 +1,7 @@
 MiniWrap for PEAR::DB -- Simple PEAR::DB wrapper
+
+<a href = "https://travis-ci.org/DavidNgugi/miniWrap" title = "Success" target="_blank"><img src="https://travis-ci.org/DavidNgugi/miniWrap.svg?branch=master"/></a>
+
 <hr>
 
 ### Table of Contents
@@ -297,3 +300,13 @@ The following features are up next in my to-do list on this project:
 ####->Optimizations
 
 You can reach me on <a href = 'https://twitter.com/DavidNgugi15'>Twitter</a>
+
+### Support
+
+If you would love to support the continuous development and maintenance of this package, please consider buying me a coffee.
+
+<a href = "https://www.buymeacoffee.com/DavidNgugi" title = "Buy Me a Coffee" target="_blank"><img src="https://github.com/DavidNgugi/miniWrap/blob/master/coffee.jpg?raw=true" width="240px" height ="150px"/></a>
+
+# License
+
+This package is open-sourced software licensed under the [MIT Licence](https://github.com/DavidNgugi/miniWrap/blob/master/LICENSE)
