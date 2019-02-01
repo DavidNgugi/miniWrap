@@ -291,13 +291,13 @@ if($q){
 I'll continue updating as I learn more techniques required in developing a Database Wrapper for PHP.
 The following features are up next in my to-do list on this project:
 
-####->Better Error Logging
-####->Joins
-####->Sub Queries
-####->DB Functions
-####->Support for more DB Drivers (Currently handling PDO fabulously!)
-####->Tests & Query Validation
-####->Optimizations
+- [ ] Better Error Logging
+- [ ] Joins
+- [ ] Sub Queries
+- [ ] DB Functions
+- [ ] Support for more DB Drivers (Currently handling PDO fabulously!)
+- [ ] Tests & Query Validation
+- [ ] Optimizations
 
 You can reach me on <a href = 'https://twitter.com/DavidNgugi15'>Twitter</a>
 
