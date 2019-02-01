@@ -1,7 +1,11 @@
 <?php
 
+require __DIR__ . '/../../vendor/autoload.php';
+
 use Dotenv\Dotenv;
 
+$dotenv = new Dotenv(__DIR__.'/../../');
+$dotenv->load();
 
 if (! function_exists('value')) {
     /**
@@ -28,9 +32,7 @@ if (!function_exists('env')) {
      */
 	function env($key, $default = null)
 	{
-		$dotenv = new Dotenv(__DIR__);
-		$dotenv->load();
-
+		
 		$value = getenv($key);
 
         if ($value === false) {
